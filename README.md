@@ -66,7 +66,7 @@ flutter run
 
 ## 📜 License
 
-This project is licensed under the MIT License – see the [LICENSE](https://github.com/AshkanWatson/Vaultly/blob/main/LICENSE) file for details.
+This project is licensed under the CC BY-NC 4.0 License – see the [LICENSE](https://github.com/AshkanWatson/Vaultly/blob/main/LICENSE) file for details.
 
 ---
 
