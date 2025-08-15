@@ -1,0 +1,1 @@
+ /Users/ashkanwatson/Developer/Project/Flutter/Vaultly/.dart_tool/flutter_build/5e20ea4a6e508f25609997d9b966886a/native_assets.json: 
