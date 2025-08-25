@@ -73,3 +73,8 @@ This project is licensed under the CC BY-NC 4.0 License – see the [LICENSE](ht
 ## 💡 Security Tip
 
 Your master password cannot be recovered. Keep it safe!
+
+---
+
+**⭐️ Star Vaultly if you love open-source security and effortless password management!**
+Made with ❤️ by AshkanWatson and the Vaultly Community.
