@@ -77,4 +77,5 @@ Your master password cannot be recovered. Keep it safe!
 ---
 
 **⭐️ Star Vaultly if you love open-source security and effortless password management!**
+
 Made with ❤️ by AshkanWatson and the Vaultly Community.
