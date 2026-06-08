@@ -7,7 +7,7 @@
 // ignore_for_file: type=lint
 
 import 'package:app_links_web/app_links_web.dart';
-import 'package:file_picker/_internal/file_picker_web.dart';
+import 'package:file_picker/src/platform/web/file_picker_web.dart';
 import 'package:flutter_secure_storage_web/flutter_secure_storage_web.dart';
 import 'package:share_plus/src/share_plus_web.dart';
 import 'package:shared_preferences_web/shared_preferences_web.dart';
