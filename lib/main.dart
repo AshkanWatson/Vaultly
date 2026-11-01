@@ -1,62 +1,34 @@
-import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
-import 'utils/constants.dart';
-import 'logic/providers/app_providers.dart';
-import 'presentation/theme/app_theme.dart';
-import 'presentation/modules/auth/lock_screen.dart';
+import 'app.dart';
+import 'data/app_settings.dart';
+import 'data/native_bridge.dart';
+import 'data/vault_service.dart';
+import 'data/vault_storage.dart';
+import 'state/providers.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Init Supabase using constants
-  if (kSupabaseUrl != 'YOUR_SUPABASE_URL' && kSupabaseAnonKey.isNotEmpty) {
-    await Supabase.initialize(
-      url: kSupabaseUrl,
-      anonKey: kSupabaseAnonKey,
-    );
-  } else {
-    print("Vaultly is running in OFFLINE MODE.");
-  }
+  // App-private storage (sandboxed per platform). Nothing is ever uploaded.
+  final support = await getApplicationSupportDirectory();
+  final storage = VaultStorage(Directory(p.join(support.path, 'vault')));
+  final settings = AppSettings.decode(await storage.readSettings());
+  final exists = await storage.hasVault();
+  final passkeyRequest = await NativeBridge.pendingPasskeyRequest();
 
-  runApp(const ProviderScope(child: VaultlyApp()));
-}
-
-class VaultlyApp extends ConsumerWidget {
-  const VaultlyApp({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-
-    return Listener(
-      onPointerDown: (_) => _resetAutoLockTimer(ref),
-      onPointerMove: (_) => _resetAutoLockTimer(ref),
-      onPointerUp: (_) => _resetAutoLockTimer(ref),
-      child: MaterialApp(
-        title: 'Vaultly',
-        debugShowCheckedModeBanner: false,
-        themeMode: themeMode,
-        navigatorKey: GlobalKey<NavigatorState>(),
-        theme: AppTheme.lightTheme(),
-        darkTheme: AppTheme.darkTheme(),
-        home: const LockScreen(),
-      ),
-    );
-  }
-
-  void _resetAutoLockTimer(WidgetRef ref) {
-    ref.read(autoLockTimerProvider)?.cancel();
-    final repo = ref.read(repositoryProvider);
-
-    if (repo.isUnlocked) {
-      ref.read(autoLockTimerProvider.notifier).state =
-          Timer(const Duration(minutes: 2), () {
-        repo.lock();
-        runApp(const ProviderScope(child: VaultlyApp()));
-      });
-    }
-  }
+  runApp(ProviderScope(
+    overrides: [
+      vaultServiceProvider.overrideWithValue(VaultService(storage)),
+      initialSettingsProvider.overrideWithValue(settings),
+      vaultExistsAtStartProvider.overrideWithValue(exists),
+      passkeyRequestProvider.overrideWithValue(passkeyRequest),
+    ],
+    child: const VaultlyApp(),
+  ));
 }

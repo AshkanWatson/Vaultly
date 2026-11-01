@@ -12,5 +12,7 @@
 <array>
     <string>$(AppIdentifierPrefix)com.example.vaultly</string>
 </array>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
 </dict>
 </plist>
