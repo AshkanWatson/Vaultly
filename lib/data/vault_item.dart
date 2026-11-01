@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import '../core/crypto/encoding.dart';
 import '../core/passkey/passkey_credential.dart';
 
 enum ItemKind { login, wifi, note }
@@ -41,6 +44,7 @@ class VaultItem {
     required this.updatedAt,
     this.deletedAt,
     List<PasswordHistoryEntry>? passwordHistory,
+    this.icon,
   })  : urls = urls ?? const [],
         passwordHistory = passwordHistory ?? const [];
 
@@ -62,6 +66,10 @@ class VaultItem {
   /// Set when moved to "Recently Deleted". Purged after 30 days.
   final DateTime? deletedAt;
   final List<PasswordHistoryEntry> passwordHistory;
+
+  /// Website icon (PNG/ICO/JPEG bytes), downloaded once and stored encrypted
+  /// in the vault so the list never needs the network.
+  final Uint8List? icon;
 
   bool get isDeleted => deletedAt != null;
   bool get hasPasskey => passkey != null;
@@ -102,6 +110,8 @@ class VaultItem {
     DateTime? updatedAt,
     DateTime? deletedAt,
     bool restore = false,
+    Uint8List? icon,
+    bool clearIcon = false,
     List<PasswordHistoryEntry>? passwordHistory,
   }) =>
       VaultItem(
@@ -119,6 +129,7 @@ class VaultItem {
         updatedAt: updatedAt ?? this.updatedAt,
         deletedAt: restore ? null : (deletedAt ?? this.deletedAt),
         passwordHistory: passwordHistory ?? this.passwordHistory,
+        icon: clearIcon ? null : (icon ?? this.icon),
       );
 
   Map<String, dynamic> toJson() => {
@@ -137,6 +148,7 @@ class VaultItem {
         if (deletedAt != null) 'deleted': deletedAt!.millisecondsSinceEpoch,
         if (passwordHistory.isNotEmpty)
           'history': passwordHistory.map((e) => e.toJson()).toList(),
+        if (icon != null) 'icon': b64(icon!),
       };
 
   factory VaultItem.fromJson(Map<String, dynamic> j) => VaultItem(
@@ -164,6 +176,7 @@ class VaultItem {
                     (e as Map).cast<String, dynamic>()))
                 .toList() ??
             const [],
+        icon: j['icon'] == null ? null : b64Decode(j['icon'] as String),
       );
 }
 

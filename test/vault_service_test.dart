@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vaultly/core/crypto/encoding.dart';
@@ -167,6 +168,19 @@ void main() {
     );
     expect(response, contains('"signature"'));
     expect(vault.byId('a')!.passkey!.lastUsedAt, isNotNull);
+  });
+
+  test('website icons are stored encrypted and survive reload', () async {
+    await vault.create('m');
+    final item = await vault.save(_item('a'));
+    final icon = Uint8List.fromList(List.generate(64, (i) => i));
+    await vault.setIcon('a', icon);
+    expect(vault.byId('a')!.updatedAt, item.updatedAt);
+    vault.lock();
+    await vault.unlock('m');
+    expect(vault.byId('a')!.icon, icon);
+    await vault.removeAllIcons();
+    expect(vault.byId('a')!.icon, isNull);
   });
 
   test('generator history keeps the most recent passwords', () async {

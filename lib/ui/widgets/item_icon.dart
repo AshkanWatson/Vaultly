@@ -23,10 +23,34 @@ class ItemIcon extends StatelessWidget {
       return _tile(c.yellow, radius, Icon(CupertinoIcons.doc_text_fill,
           color: Colors.white, size: size * 0.5));
     }
+    final icon = item.icon;
+    if (icon != null) {
+      return Container(
+        width: size,
+        height: size,
+        padding: EdgeInsets.all(size * 0.14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: radius,
+          border: Border.all(color: c.separator, width: 0.5),
+        ),
+        child: Image.memory(
+          icon,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+          gaplessPlayback: true,
+          errorBuilder: (_, _, _) => _monogram(context, c, radius),
+        ),
+      );
+    }
+    return _monogram(context, c, radius);
+  }
+
+  Widget _monogram(BuildContext context, VColors c, BorderRadius radius) {
     final name = item.displayTitle;
     final hash = name.toLowerCase().codeUnits.fold<int>(7, (h, u) => (h * 31 + u) & 0x7fffffff);
     final color = c.accents[hash % c.accents.length];
-    final letters = _monogram(name);
+    final letters = _letters(name);
     return _tile(
       color,
       radius,
@@ -53,7 +77,7 @@ class ItemIcon extends StatelessWidget {
         child: child,
       );
 
-  static String _monogram(String name) {
+  static String _letters(String name) {
     final words = name
         .replaceAll(RegExp(r'\.(com|org|net|io|app|dev|co)$'), '')
         .split(RegExp(r'[\s._\-]+'))

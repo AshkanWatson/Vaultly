@@ -13,6 +13,7 @@ class AppSettings {
     this.clipboardSeconds = 60,
     this.biometricEnabled = false,
     this.generator = const GeneratorOptions(),
+    this.fetchIcons = true,
   });
 
   final ThemeMode themeMode;
@@ -25,6 +26,9 @@ class AppSettings {
   final int clipboardSeconds;
   final bool biometricEnabled;
   final GeneratorOptions generator;
+
+  /// Download each website's icon once when an item is saved.
+  final bool fetchIcons;
 
   static const autoLockChoices = <int, String>{
     0: 'Immediately',
@@ -49,6 +53,7 @@ class AppSettings {
     int? clipboardSeconds,
     bool? biometricEnabled,
     GeneratorOptions? generator,
+    bool? fetchIcons,
   }) =>
       AppSettings(
         themeMode: themeMode ?? this.themeMode,
@@ -56,6 +61,7 @@ class AppSettings {
         clipboardSeconds: clipboardSeconds ?? this.clipboardSeconds,
         biometricEnabled: biometricEnabled ?? this.biometricEnabled,
         generator: generator ?? this.generator,
+        fetchIcons: fetchIcons ?? this.fetchIcons,
       );
 
   String encode() => jsonEncode({
@@ -64,6 +70,7 @@ class AppSettings {
         'clipboard': clipboardSeconds,
         'biometric': biometricEnabled,
         'generator': generator.toJson(),
+        'icons': fetchIcons,
       });
 
   static AppSettings decode(String? text) {
@@ -80,6 +87,7 @@ class AppSettings {
             ? GeneratorOptions.fromJson(
                 (j['generator'] as Map).cast<String, dynamic>())
             : const GeneratorOptions(),
+        fetchIcons: j['icons'] as bool? ?? true,
       );
     } catch (_) {
       return const AppSettings();

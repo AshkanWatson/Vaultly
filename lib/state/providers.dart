@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/security/security_audit.dart';
 import '../data/app_settings.dart';
 import '../data/biometric_service.dart';
+import '../data/favicon_service.dart';
 import '../data/native_bridge.dart';
 import '../data/vault_item.dart';
 import '../data/vault_service.dart';
@@ -17,6 +18,7 @@ final initialSettingsProvider =
     Provider<AppSettings>((ref) => const AppSettings());
 final vaultExistsAtStartProvider = Provider<bool>((ref) => false);
 final biometricServiceProvider = Provider((ref) => BiometricService());
+final faviconServiceProvider = Provider((ref) => FaviconService());
 
 /// A passkey request from the OS, if Vaultly was launched for one.
 final passkeyRequestProvider = Provider<PasskeyRequest?>((ref) => null);
@@ -135,6 +137,36 @@ class VaultController extends Notifier<VaultState> {
     _refresh();
     return saved;
   }
+
+  /// Downloads the website icon for [item] in the background (if enabled,
+  /// and if the item has a website but no icon yet, or its website changed).
+  Future<bool> fetchIcon(VaultItem item, {bool force = false}) async {
+    if (!ref.read(settingsProvider).fetchIcons) return false;
+    if (item.kind != ItemKind.login || item.urls.isEmpty) return false;
+    if (item.icon != null && !force) return false;
+    final bytes =
+        await ref.read(faviconServiceProvider).fetchForUrl(item.urls.first);
+    if (bytes == null || !_vault.isUnlocked) return false;
+    final current = _vault.byId(item.id);
+    if (current == null || current.urls.isEmpty ||
+        current.urls.first != item.urls.first) {
+      return false;
+    }
+    await _vault.setIcon(item.id, bytes);
+    _refresh();
+    return true;
+  }
+
+  /// Fetches icons for every login that has a website but no icon.
+  Future<int> fetchMissingIcons() async {
+    var n = 0;
+    for (final i in _vault.activeItems) {
+      if (i.icon == null && await fetchIcon(i)) n++;
+    }
+    return n;
+  }
+
+  Future<void> removeAllIcons() => _run(_vault.removeAllIcons);
 
   Future<void> moveToTrash(String id) => _run(() => _vault.moveToTrash(id));
   Future<void> restore(String id) => _run(() => _vault.restore(id));

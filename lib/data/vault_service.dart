@@ -162,6 +162,23 @@ class VaultService {
     await _persist();
   }
 
+  /// Stores a website icon. Doesn't change "last modified".
+  Future<void> setIcon(String id, Uint8List icon) async {
+    final idx = data.items.indexWhere((i) => i.id == id);
+    if (idx < 0) return;
+    data.items[idx] = data.items[idx].copyWith(icon: icon);
+    await _persist();
+  }
+
+  Future<void> removeAllIcons() async {
+    for (var i = 0; i < data.items.length; i++) {
+      if (data.items[i].icon != null) {
+        data.items[i] = data.items[i].copyWith(clearIcon: true);
+      }
+    }
+    await _persist();
+  }
+
   Future<void> _update(String id, VaultItem Function(VaultItem) f) async {
     final idx = data.items.indexWhere((i) => i.id == id);
     if (idx < 0) return;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -95,7 +97,10 @@ class _ItemEditScreenState extends ConsumerState<ItemEditScreen> {
     final urls = _urls.map((u) => u.text.trim()).where((u) => u.isNotEmpty).toList();
     final base = widget.item ??
         VaultItem(id: newItemId(), kind: _kind, createdAt: now, updatedAt: now);
+    final oldSite = widget.item?.urls.isEmpty ?? true ? null : widget.item!.urls.first;
+    final newSite = urls.isEmpty ? null : urls.first;
     final item = base.copyWith(
+      clearIcon: oldSite != newSite,
       title: _title.text.trim(),
       username: _user.text.trim(),
       password: _pass.text,
@@ -104,7 +109,10 @@ class _ItemEditScreenState extends ConsumerState<ItemEditScreen> {
       otpAuth: otp.isEmpty ? null : otp,
       clearOtp: otp.isEmpty,
     );
-    await ref.read(vaultProvider.notifier).save(item);
+    final ctrl = ref.read(vaultProvider.notifier);
+    final saved = await ctrl.save(item);
+    // Fetch the website icon in the background; the list updates when done.
+    unawaited(ctrl.fetchIcon(saved));
     if (!mounted) return;
     Navigator.pop(context);
     showToast(context, 'Saved');

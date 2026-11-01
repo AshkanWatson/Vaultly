@@ -174,6 +174,46 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
             InsetSection(
+              header: 'Website Icons',
+              dividerIndent: 57,
+              footer: const Text(
+                  'When you save a password, Vaultly downloads the website’s icon once, directly from that website, and stores it encrypted in your vault. Turn this off to keep Vaultly completely offline.'),
+              children: [
+                InsetRow(
+                  leading: SettingsIcon(CupertinoIcons.globe, c.teal),
+                  title: const Text('Download Website Icons'),
+                  trailing: CupertinoSwitch(
+                    value: s.fetchIcons,
+                    activeTrackColor: c.green,
+                    onChanged: (v) =>
+                        settings.update((x) => x.copyWith(fetchIcons: v)),
+                  ),
+                ),
+                if (s.fetchIcons)
+                  InsetRow(
+                    leading: SettingsIcon(CupertinoIcons.arrow_down_circle_fill, c.blue),
+                    title: const Text('Download Missing Icons'),
+                    onTap: () async {
+                      showToast(context, 'Downloading icons…',
+                          icon: CupertinoIcons.arrow_down_circle);
+                      final n = await ctrl.fetchMissingIcons();
+                      if (context.mounted) {
+                        showToast(context,
+                            n == 0 ? 'No new icons found' : 'Added $n icons');
+                      }
+                    },
+                  ),
+                InsetRow(
+                  leading: SettingsIcon(CupertinoIcons.xmark_circle_fill, c.gray),
+                  title: const Text('Remove All Icons'),
+                  onTap: () async {
+                    await ctrl.removeAllIcons();
+                    if (context.mounted) showToast(context, 'Icons removed');
+                  },
+                ),
+              ],
+            ),
+            InsetSection(
               header: 'Backup & Transfer',
               dividerIndent: 57,
               footer: const Text(
@@ -209,12 +249,12 @@ class SettingsScreen extends ConsumerWidget {
               header: 'About',
               dividerIndent: 57,
               footer: const Text(
-                  'Vaultly has no network permission and never connects to the internet. Your master password is never stored; if you forget it, your vault can’t be recovered.'),
+                  'Your vault never leaves this device. The only network request Vaultly can make is downloading website icons (optional, above). Your master password is never stored; if you forget it, your vault can’t be recovered.'),
               children: [
                 InsetRow(
                   leading: SettingsIcon(CupertinoIcons.airplane, c.orange),
-                  title: const Text('100% Offline'),
-                  value: const Text('No network access'),
+                  title: const Text('Offline Vault'),
+                  value: const Text('No sync, no account'),
                 ),
                 InsetRow(
                   leading: SettingsIcon(CupertinoIcons.lock_shield_fill, c.blue),

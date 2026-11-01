@@ -96,7 +96,7 @@ class SetupScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 28),
                       feature(CupertinoIcons.airplane, c.orange, 'Completely Offline',
-                          'No account, no cloud, no tracking. Vaultly never connects to the internet.'),
+                          'No account, no cloud, no tracking. Your vault never leaves this device.'),
                       feature(CupertinoIcons.lock_shield_fill, c.blue, 'Strong Encryption',
                           'AES-256-GCM with a key derived from your master password using Argon2id.'),
                       feature(CupertinoIcons.person_crop_circle_badge_checkmark, c.green,

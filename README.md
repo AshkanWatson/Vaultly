@@ -11,7 +11,8 @@ No account. No cloud. No network permission. Just strong encryption and full con
 
 | | |
 |---|---|
-| **Fully offline** | No account, no sync, no telemetry. The Android release build has no `INTERNET` permission, icons are drawn locally (no favicon downloads), and cloud backup of app data is disabled. |
+| **Offline vault** | No account, no sync, no telemetry. Your vault never leaves the device and Android cloud backup of app data is disabled. |
+| **Website icons** | When you save a password, Vaultly downloads the site's icon **once, directly from that website** (never through Google or another favicon service) and stores it encrypted in the vault. Lists never touch the network. Can be turned off in Settings for a fully offline app. |
 | **Strong encryption** | Argon2id key derivation + AES-256-GCM authenticated encryption. See [Security design](#-security-design). |
 | **Apple Passwords–style UI** | Mobile-first: large-title navigation, search, category tiles (All, Passkeys, Codes, Wi-Fi, Security, Deleted, Favorites, Notes), inset grouped lists, light & dark mode. Tablet/desktop get a sidebar layout. |
 | **Password generator** | Random (4–64 chars, character classes, avoid ambiguous), **Memorable** passphrases from the EFF 7,776-word list, **PIN**, and Apple-style **Easy to Type** (`kibvoq-7ruxzy-Wefnyp`). Shows entropy & strength, keeps an encrypted history of copied passwords (like LastPass). |

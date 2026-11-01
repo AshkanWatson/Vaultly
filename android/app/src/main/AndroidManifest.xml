@@ -2,10 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--
-      Vaultly is offline by design: there is deliberately NO INTERNET
-      permission in release builds. (Debug/profile manifests add it only so
-      Flutter tooling can attach.)
+      The vault itself is never sent anywhere (no sync, no account, cloud
+      backup disabled). INTERNET is used only to download website icons,
+      directly from each website, when that option is on in Settings.
     -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <application
