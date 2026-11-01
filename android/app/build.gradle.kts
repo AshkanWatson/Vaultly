@@ -24,7 +24,8 @@ android {
         applicationId = "com.example.vaultly"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // 23+: Keystore-backed biometric storage. Passkey provider needs 34+ at runtime.
+        minSdk = maxOf(23, flutter.minSdkVersion)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -41,4 +42,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Credential Manager provider APIs (passkeys).
+    implementation("androidx.credentials:credentials:1.5.0")
 }
